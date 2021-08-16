@@ -4,8 +4,7 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 module.exports = ( fastify, opts, done ) => {
-  fastify.get('/user', (req, res) => {
-    async function main() {
+  fastify.get('/user', async (req, res) => {
       // await prisma.userAccount.create({
       //   data: {
       //     eCommerceAccount: "arnold@gmail.com",
@@ -27,24 +26,26 @@ module.exports = ( fastify, opts, done ) => {
       //     }
       //   }
       // })
-    
+
       const allUsers = await prisma.userAccount.findMany({
         include: {
           transactions: { include: { DestinationDetails: true} }
         }
       })
-    
+      
+      res.code(200)
       res.send(allUsers)
-    }
-    
-    main()
-      .catch((e) => {
-        throw e
-      })
-      .finally(async () => {
-        await prisma.$disconnect
-      })
+  })
+
+  fastify.post('/user', async (req, res) => {
+    const newUser = await prisma.userAccount.create({
+      data: { ...req.body }
+    })
+
+    res.code(200)
+    res.send(newUser)
 
   })
+
   done()
 }
