@@ -5,45 +5,82 @@ const prisma = new PrismaClient()
 
 module.exports = ( fastify, opts, done ) => {
   fastify.get('/user', async (req, res) => {
-      // await prisma.userAccount.create({
-      //   data: {
-      //     eCommerceAccount: "arnold@gmail.com",
-      //     eCommerceUsername: "arnold",
-      //     transactions: {
-      //       create: {
-      //         resi: 9080928,
-      //         DestinationDetails: {
-      //           create: {
-      //             CityId: 912837,
-      //             CityName: 'Jogjakarta',
-      //             Province: "Jogjakarta",
-      //             ProvinceId: 123,
-      //             type: "city",
-      //             PostalCode: 14998,
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // })
-
-      const allUsers = await prisma.userAccount.findMany({
-        include: {
-          transactions: { include: { DestinationDetails: true} }
-        }
-      })
-      
-      res.code(200)
-      res.send(allUsers)
+    const allUsers = await prisma.userAccount.findMany({
+      include: {
+        transactions: { include: { DestinationDetails: true} }
+      }
+    })
+    
+    res.code(200)
+    res.send(allUsers)
   })
 
   fastify.post('/user', async (req, res) => {
+    const { eCommerceAccount, eCommerceUsername, transactions } = req.body
+    const { resi, DestinationDetails } = transactions
+    const { CityId, CityName, Province, ProvinceId, type, PostalCode } = DestinationDetails
+
     const newUser = await prisma.userAccount.create({
-      data: { ...req.body }
+      data: {
+        eCommerceAccount,
+        eCommerceUsername,
+        transactions: {
+          create: {
+            resi,
+            DestinationDetails: {
+              create: {
+                CityId,
+                CityName,
+                Province,
+                ProvinceId,
+                type,
+                PostalCode
+              }
+            }
+          }
+        }
+      }
     })
 
     res.code(200)
     res.send(newUser)
+
+  })
+
+  fastify.post('/user/:id', async (req, res) => {
+    const { id } = req.params
+    const { eCommerceAccount, eCommerceUsername, transactions } = req.body
+    const { resi, DestinationDetails } = transactions
+    const { CityId, CityName, Province, ProvinceId, type, PostalCode } = DestinationDetails
+
+    const user = await prisma.userAccount.update({
+      where: {
+        id: parseInt(id)
+      },
+      data: {
+        transactions: {
+          connect: {
+            id: parseInt(id)
+          },
+          create: {
+            resi,
+            DestinationDetails: {
+              create: { 
+                CityId,
+                CityName,
+                Province,
+                ProvinceId,
+                type,
+                PostalCode
+              }
+            }
+          }
+        }
+      }
+    })
+
+    res.status(200)
+    res.send(user)
 
   })
 
