@@ -7,7 +7,14 @@ module.exports = ( fastify, opts, done ) => {
   fastify.get('/user', async (req, res) => {
     const allUsers = await prisma.userAccount.findMany({
       include: {
-        transactions: { include: { DestinationDetails: true} }
+        transactions: { 
+          include: { 
+            DestinationDetails: true,
+            SenderProfile: true,
+            RecipientProfiles: true,
+            Track: true
+          } 
+        }
       }
     })
     
@@ -17,7 +24,7 @@ module.exports = ( fastify, opts, done ) => {
 
   fastify.post('/user', async (req, res) => {
     const { eCommerceAccount, eCommerceUsername, transactions } = req.body
-    const { resi, DestinationDetails } = transactions
+    const { resi, DestinationDetails, SenderProfile, RecipientProfiles, Track } = transactions
     const { CityId, CityName, Province, ProvinceId, type, PostalCode } = DestinationDetails
 
     const newUser = await prisma.userAccount.create({
@@ -35,6 +42,25 @@ module.exports = ( fastify, opts, done ) => {
                 ProvinceId,
                 type,
                 PostalCode
+              }
+            },
+            SenderProfile: {
+              create: {
+                name: "asdadads",
+                address: "aoidjaoisdj",
+                PhoneNumber: 203942304
+              }
+            },
+            RecipientProfiles: {
+              create: {
+                name: "iosdfijsoi",
+                PhoneNumber: 2039847
+              }
+            },
+            Track: {
+              create: {
+                Oclock: 12.00,
+                Location: "Jakarta"
               }
             }
           }
@@ -72,6 +98,25 @@ module.exports = ( fastify, opts, done ) => {
                 ProvinceId,
                 type,
                 PostalCode
+              }
+            },
+            SenderProfile: {
+              create: {
+                name: "asdadads",
+                address: "aoidjaoisdj",
+                PhoneNumber: 203942304
+              }
+            },
+            RecipientProfiles: {
+              create: {
+                name: "iosdfijsoi",
+                PhoneNumber: 2039847
+              }
+            },
+            Track: {
+              create: {
+                Oclock: 12.00,
+                Location: "Jakarta"
               }
             }
           }
