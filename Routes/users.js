@@ -76,8 +76,10 @@ module.exports = ( fastify, opts, done ) => {
   fastify.post('/user/:id', async (req, res) => {
     const { id } = req.params
     const { eCommerceAccount, eCommerceUsername, transactions } = req.body
-    const { resi, DestinationDetails } = transactions
+    const { resi, DestinationDetails, SenderProfile, RecipientProfiles, Track } = transactions
     const { CityId, CityName, Province, ProvinceId, type, PostalCode } = DestinationDetails
+    const { name, address, PhoneNumber } = SenderProfile
+    const { Oclock, Location } = Track
 
     const user = await prisma.userAccount.update({
       where: {
@@ -102,21 +104,21 @@ module.exports = ( fastify, opts, done ) => {
             },
             SenderProfile: {
               create: {
-                name: "asdadads",
-                address: "aoidjaoisdj",
-                PhoneNumber: 203942304
+                name,
+                address,
+                PhoneNumber
               }
             },
             RecipientProfiles: {
               create: {
-                name: "iosdfijsoi",
-                PhoneNumber: 2039847
+                name: RecipientProfiles.name,
+                PhoneNumber: RecipientProfiles.PhoneNumber
               }
             },
             Track: {
               create: {
-                Oclock: 12.00,
-                Location: "Jakarta"
+                Oclock,
+                Location
               }
             }
           }
@@ -126,6 +128,36 @@ module.exports = ( fastify, opts, done ) => {
 
     res.status(200)
     res.send(user)
+
+  })
+
+  fastify.post('/user/track/:id', async (req, res) => {
+    const { id } = req.params
+    const { eCommerceAccount, eCommerceUsername, transactions } = req.body
+    const { resi, DestinationDetails, SenderProfile, RecipientProfiles, Track } = transactions
+    const { CityId, CityName, Province, ProvinceId, type, PostalCode } = DestinationDetails
+    const { name, address, PhoneNumber } = SenderProfile
+    const { Oclock, Location } = Track
+    
+    const UpdateTrack = await prisma.transactions.update({
+      where: {
+        id: parseInt(id)
+      },
+      data: {
+        Track: {
+          connect: {
+            id: parseInt(id)
+          },
+          create: {
+            Oclock,
+            Location
+          }
+        }
+      }
+    })
+
+    res.status(200)
+    res.send(UpdateTrack)
 
   })
 

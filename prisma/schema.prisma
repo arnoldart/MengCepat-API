@@ -22,8 +22,7 @@ model UserAccount {
 model transactions {
   id                  Int @default(autoincrement()) @id
   resi                Int
-  user                UserAccount @relation(fields: [UserId], references: [id])
-  UserId              Int
+  user                UserAccount @relation(fields: [TransactionId], references: [id])
   DestinationDetails  DestinationDetails @relation(fields: [TransactionId], references: [id])
   SenderProfile       SenderProfile @relation(fields: [TransactionId], references: [id])
   RecipientProfiles   RecipientProfiles @relation(fields: [TransactionId], references: [id])
@@ -51,18 +50,18 @@ model SenderProfile {
 }
 
 model RecipientProfiles {
-  id Int @default(autoincrement()) @id
-  name String
-  PhoneNumber Int?
+  id                Int @default(autoincrement()) @id
+  name              String
+  PhoneNumber       Int?
   UserTransaction   transactions[]
 }
 
 model Track {
-  id        Int @default(autoincrement()) @id
-  user      transactions @relation(fields: [UserId], references: [id])
-  UserId    Int
-  Oclock    Int
-  Location  String
+  id                Int @default(autoincrement()) @id 
+  user              transactions @relation(fields: [TransactionId], references: [TransactionId])
+  TransactionId     Int
+  Oclock            Int
+  Location          String
 }
 
 // model Post {
