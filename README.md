@@ -11,4 +11,3 @@ This is API for app package delivery
 | Get    | /v1/user/           | Get All User              |
 | Post   | /v1/user/{id}       | Post new user transaction |
 |        | /v1/user/track/{id} | Post tracking update      |
-|        |                     |                           |
