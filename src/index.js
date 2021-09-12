@@ -1,9 +1,5 @@
 const fastify = require('fastify') ({ logger: true })
 
-fastify.get('/', async (req, res) => {
-  res.send({ hello: 'world' })
-})
-
 fastify.register(require('../Routes/users'), { prefix: '/v1' })
 
 const start = async () => {
